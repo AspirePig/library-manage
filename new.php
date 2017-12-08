@@ -207,7 +207,7 @@ ETO;
 			echo "<script>alert('填写完整信息');window.location.href = 'admin.php';</script>";
 			exit();
 		}
-		$sql="select rdate,breturn from borrow where snum=$snum and bid='$bid'";
+		$sql="select rdate,breturn from borrow where snum=$snum and bid='$bid' and breturn = 0";
 		include('config.php');
 		$query=mysqli_query($conn,$sql);
 		if(mysqli_num_rows($query)==0)
@@ -263,6 +263,24 @@ ETO;
 		}
 		else
 		{
+			$sql="select * from borrow where snum =$snum and breturn=0";
+			$query=mysqli_query($conn,$sql);
+			if(mysqli_affected_rows($conn)>4)
+			{
+				mysqli_close($conn);
+				echo "<script>alert('已达到借书上限');window.location.href = 'admin.php';</script>";
+				exit;
+			}
+			
+			$sql="select * from borrow where snum =$snum and bid = '$bid' breturn=0";
+			$query=mysqli_query($conn,$sql);
+			if(mysqli_affected_rows($conn))
+			{
+				mysqli_close($conn);
+				echo "<script>alert('不能借阅已借阅过的书');window.location.href = 'admin.php';</script>";
+				exit;
+			}
+			
 			$sql="update book set inventory =  inventory-1 where inventory>0 and bnum='$bid'";
 			$query=mysqli_query($conn,$sql);
 			if(mysqli_affected_rows($conn))
@@ -273,6 +291,12 @@ ETO;
 					mysqli_close($conn);
 					echo "<script>alert('借书成功');window.location.href = 'admin.php';</script>";
 				}
+			}
+			else
+			{
+				mysqli_close($conn);
+				echo "<script>alert('库存不足');window.location.href = 'admin.php';</script>";
+				exit;
 			}
 		}	
 	}
