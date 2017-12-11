@@ -1,4 +1,6 @@
-
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
@@ -135,7 +137,7 @@ if(!empty($_POST['username']) && !empty($_POST['passwd']) )
 		}
 		else{
 		mysqli_close($conn);
-		session_start();
+//		session_start();
 		// store session data
 		$_SESSION['id']=$username;
 		$_SESSION['admin']='yes';
